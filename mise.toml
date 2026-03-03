@@ -1,0 +1,55 @@
+[tools]
+node = { version = "24", postinstall = "npm i -g copilot" }
+
+
+[tasks."install:node"]
+description = "Install Node.js and global packages"
+dir = "~/.config/.lint"
+run = "npm i eslint @eslint/js typescript @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-html stylelint stylelint-config-standard-scss"
+
+[tasks.copilot]
+run = "mise x node@24 -- copilot"
+
+[tasks."lint:js"]
+shell = "pwsh -NoProfile -Command"
+hide = true
+usage = '''
+arg "[paths]" var=#true help="Paths or globs to lint"
+'''
+description = "Run ESLint"
+run = "npx eslint . --ext .js,.jsx,.ts,.tsx --config ~/.config/.lint/eslint.config.js"
+run_windows = '''
+. "$env:USERPROFILE\spinner.ps1"
+$paths = $env:USAGE_PATHS
+Invoke-Spinner `
+  "npx eslint $paths --ext .js,.jsx,.ts,.tsx --config $env:USERPROFILE\.config\.lint\eslint.config.js" `
+  "Running ESLint"
+'''
+
+[tasks."lint:css"]
+shell = "pwsh -NoProfile -Command"
+hide = true
+usage = '''
+arg "[paths]" var=#true help="Paths or globs to lint"
+'''
+description = "Run Stylelint for SCSS"
+run = "npx stylelint \"**/*.scss\" -c ~/.config/.lint/stylelint.config.cjs"
+run_windows = '''
+. "$env:USERPROFILE\spinner.ps1"
+Invoke-Spinner `
+    "npx stylelint **/*.scss -c $env:USERPROFILE\.config\.lint\stylelint.config.cjs" `
+    "Running Stylelint"
+'''
+
+[tasks.lint]
+description = "Run JS and CSS linters"
+usage = '''
+arg "<lint>" help="Which linter to run (js, css, or all)" {
+    choices "js" "css" "all"
+}
+arg "[paths]" var=#true help="Paths or globs to lint (optional, defaults to current directory)"
+'''
+run = "mise run lint:${usage_lint} ${usage_paths:-.}"
+run_windows = "mise run lint:%usage_lint% %usage_paths%"
+
+
