@@ -17,12 +17,12 @@ usage = '''
 arg "[paths]" var=#true help="Paths or globs to lint"
 '''
 description = "Run ESLint"
-run = "npx eslint . --ext .js,.jsx,.ts,.tsx --config ~/.config/.lint/eslint.config.js"
+run = "mise x node@24 -- npx eslint . --ext .js,.jsx,.ts,.tsx --config ~/.config/.lint/eslint.config.js"
 run_windows = '''
 . "$env:USERPROFILE\spinner.ps1"
 $paths = $env:USAGE_PATHS
 Invoke-Spinner `
-  "npx eslint $paths --ext .js,.jsx,.ts,.tsx --config $env:USERPROFILE\.config\.lint\eslint.config.js" `
+  "mise x node@24 -- npx eslint $paths --ext .js,.jsx,.ts,.tsx --config $env:USERPROFILE\.config\.lint\eslint.config.js" `
   "Running ESLint"
 '''
 
@@ -33,11 +33,11 @@ usage = '''
 arg "[paths]" var=#true help="Paths or globs to lint"
 '''
 description = "Run Stylelint for SCSS"
-run = "npx stylelint \"**/*.scss\" -c ~/.config/.lint/stylelint.config.cjs"
+run = "mise x node@24 -- npx stylelint \"**/*.scss\" -c ~/.config/.lint/stylelint.config.cjs"
 run_windows = '''
 . "$env:USERPROFILE\spinner.ps1"
 Invoke-Spinner `
-    "npx stylelint **/*.scss -c $env:USERPROFILE\.config\.lint\stylelint.config.cjs" `
+    "mise x node@24 -- npx stylelint **/*.scss -c $env:USERPROFILE\.config\.lint\stylelint.config.cjs" `
     "Running Stylelint"
 '''
 
@@ -52,4 +52,9 @@ arg "[paths]" var=#true help="Paths or globs to lint (optional, defaults to curr
 run = "mise run lint:${usage_lint} ${usage_paths:-.}"
 run_windows = "mise run lint:%usage_lint% %usage_paths%"
 
-
+[tasks.clip]
+description = "Copy output of a command to clipboard"
+usage = '''arg "<command>" help="The command to run and copy its output"
+'''
+run = "mise x node@24 -- npx clipboardy ${usage_command}"
+run_windows = "clip < %usage_command%"
